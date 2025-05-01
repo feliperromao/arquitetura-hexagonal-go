@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/asaskevich/govalidator"
+	uuidv4 "github.com/satori/go.uuid"
 )
 
 func init() {
@@ -11,7 +12,7 @@ func init() {
 }
 
 type ProductInterface interface {
-	isValid() (bool, error)
+	IsValid() (bool, error)
 	Enable() error
 	Disable() error
 
@@ -19,6 +20,20 @@ type ProductInterface interface {
 	GetName() string
 	GetStatus() string
 	GetPrice() float64
+}
+
+type ProductServiceInterface interface {
+	Get(id string) (ProductInterface, error)
+	Create(product ProductInterface) (ProductInterface, error)
+	Enable(id string) (ProductInterface, error)
+	Disable(id string) (ProductInterface, error)
+}
+
+type ProductRepositoryInterface interface {
+	Get(id string) (ProductInterface, error)
+	Create(product ProductInterface) (ProductInterface, error)
+	Update(product ProductInterface) (ProductInterface, error)
+	Delete(id string) error
 }
 
 const (
@@ -31,6 +46,13 @@ type Product struct {
 	Name   string  `valid:"required"`
 	Price  float64 `valid:"float,optional"`
 	Status string  `valid:"required"`
+}
+
+func NewProduct() *Product {
+	return &Product{
+		ID: uuidv4.NewV4().String(),
+		Status: DISABLED,
+	}
 }
 
 func (p *Product) IsValid() (bool, error) {
