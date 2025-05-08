@@ -2,6 +2,7 @@ package db_test
 
 import (
 	"arquitetura-hexagonal-go/adapters/db"
+	"arquitetura-hexagonal-go/application"
 	"database/sql"
 	"log"
 	"testing"
@@ -14,9 +15,9 @@ var Db *sql.DB
 func setUp() {
 	Db, _ = sql.Open("sqlite3", ":memory:")
 	createTable(Db)
-	insertProduct(Db, "1", "Product 1", 10.0, "active")
-	insertProduct(Db, "2", "Product 2", 20.0, "inactive")
-	insertProduct(Db, "3", "Product 3", 30.0, "active")
+	insertProduct(Db, "1", "Product 1", 10.0, application.ENABLED)
+	insertProduct(Db, "2", "Product 2", 20.0, application.DISABLED)
+	insertProduct(Db, "3", "Product 3", 30.0, application.ENABLED)
 }
 
 func createTable(db *sql.DB) {
@@ -51,5 +52,42 @@ func TestProductDb_Get(t *testing.T) {
 	require.Equal(t, "1", product.GetID())
 	require.Equal(t, "Product 1", product.GetName())
 	require.Equal(t, 10.0, product.GetPrice())
-	require.Equal(t, "active", product.GetStatus())
+	require.Equal(t, application.ENABLED, product.GetStatus())
+}
+
+func TestProductDb_Create(t *testing.T) {
+	setUp()
+	defer Db.Close()
+	productDb := db.NewProductDb(Db)
+
+	product := application.NewProduct()
+	product.Name = "Product 4"
+	product.Price = 45.97
+	product.Status = application.ENABLED
+
+	createdProduct, err := productDb.Create(product)
+	require.Nil(t, err)
+	require.Equal(t, product.GetID(), createdProduct.GetID())
+	require.Equal(t, product.GetName(), createdProduct.GetName())
+	require.Equal(t, product.GetPrice(), createdProduct.GetPrice())
+	require.Equal(t, product.GetStatus(), createdProduct.GetStatus())
+}
+
+func TestProductDb_Update(t *testing.T) {
+	setUp()
+	defer Db.Close()
+	productDb := db.NewProductDb(Db)
+
+	product := application.NewProduct()
+	product.ID = "1"
+	product.Name = "Product 1 Updated"
+	product.Price = 15.0
+	product.Status = application.DISABLED
+
+	updatedProduct, err := productDb.Update(product)
+	require.Nil(t, err)
+	require.Equal(t, product.GetID(), updatedProduct.GetID())
+	require.Equal(t, product.GetName(), updatedProduct.GetName())
+	require.Equal(t, product.GetPrice(), updatedProduct.GetPrice())
+	require.Equal(t, product.GetStatus(), updatedProduct.GetStatus())
 }
