@@ -6,15 +6,15 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type ProductDb struct {
+type ProductRepository struct {
 	db *sql.DB
 }
 
-func NewProductDb(db *sql.DB) *ProductDb {
-	return &ProductDb{db: db}
+func NewProductRepository(db *sql.DB) *ProductRepository {
+	return &ProductRepository{db: db}
 }
 
-func (p *ProductDb) Get(id string) (application.ProductInterface, error) {
+func (p *ProductRepository) Get(id string) (application.ProductInterface, error) {
 	var product application.Product
 	stmt , err := p.db.Prepare("SELECT id, name, price, status FROM products WHERE id = ?")
 	if err != nil {
@@ -27,7 +27,7 @@ func (p *ProductDb) Get(id string) (application.ProductInterface, error) {
 	return &product, nil
 }
 
-func (p *ProductDb) Create(product application.ProductInterface) (application.ProductInterface, error) {
+func (p *ProductRepository) Create(product application.ProductInterface) (application.ProductInterface, error) {
 	stmt, err := p.db.Prepare("INSERT INTO products (id, name, price, status) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (p *ProductDb) Create(product application.ProductInterface) (application.Pr
 	return product, nil
 }
 
-func (p *ProductDb) Update(product application.ProductInterface) (application.ProductInterface, error) {
+func (p *ProductRepository) Update(product application.ProductInterface) (application.ProductInterface, error) {
 	stmt, err := p.db.Prepare("UPDATE products SET name = ?, price = ?, status = ? WHERE id = ?")
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (p *ProductDb) Update(product application.ProductInterface) (application.Pr
 	return product, nil
 }
 
-func (p *ProductDb) Delete(id string) error  {
+func (p *ProductRepository) Delete(id string) error  {
 	stmt, err := p.db.Prepare("DELETE FROM products WHERE id = ?")
 	if err != nil {
 		return err

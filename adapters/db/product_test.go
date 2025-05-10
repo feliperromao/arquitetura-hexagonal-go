@@ -45,9 +45,9 @@ func insertProduct(db *sql.DB, id string, name string, price float64, status str
 func TestProductDb_Get(t *testing.T) {
 	setUp()
 	defer Db.Close()
-	productDb := db.NewProductDb(Db)
+	repository := db.NewProductRepository(Db)
 
-	product, err := productDb.Get("1")
+	product, err := repository.Get("1")
 	require.Nil(t, err)
 	require.Equal(t, "1", product.GetID())
 	require.Equal(t, "Product 1", product.GetName())
@@ -58,14 +58,14 @@ func TestProductDb_Get(t *testing.T) {
 func TestProductDb_Create(t *testing.T) {
 	setUp()
 	defer Db.Close()
-	productDb := db.NewProductDb(Db)
+	repository := db.NewProductRepository(Db)
 
 	product := application.NewProduct()
 	product.Name = "Product 4"
 	product.Price = 45.97
 	product.Status = application.ENABLED
 
-	createdProduct, err := productDb.Create(product)
+	createdProduct, err := repository.Create(product)
 	require.Nil(t, err)
 	require.Equal(t, product.GetID(), createdProduct.GetID())
 	require.Equal(t, product.GetName(), createdProduct.GetName())
@@ -76,7 +76,7 @@ func TestProductDb_Create(t *testing.T) {
 func TestProductDb_Update(t *testing.T) {
 	setUp()
 	defer Db.Close()
-	productDb := db.NewProductDb(Db)
+	repository := db.NewProductRepository(Db)
 
 	product := application.NewProduct()
 	product.ID = "1"
@@ -84,7 +84,7 @@ func TestProductDb_Update(t *testing.T) {
 	product.Price = 15.0
 	product.Status = application.DISABLED
 
-	updatedProduct, err := productDb.Update(product)
+	updatedProduct, err := repository.Update(product)
 	require.Nil(t, err)
 	require.Equal(t, product.GetID(), updatedProduct.GetID())
 	require.Equal(t, product.GetName(), updatedProduct.GetName())

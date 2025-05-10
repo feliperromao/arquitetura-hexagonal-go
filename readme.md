@@ -19,3 +19,8 @@ create table products(id string, name string, priva float, status string);
 ```sh
 .tables
 ```
+
+# Cobra init applicatin
+```sh
+cobra init --pkg-name="arquitetura-hexagonal-go"
+```
