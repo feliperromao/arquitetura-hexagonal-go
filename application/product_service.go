@@ -4,6 +4,12 @@ type ProductService struct {
 	ProductRepository ProductRepositoryInterface
 }
 
+func NewProductService(repository ProductRepositoryInterface) *ProductService {
+	return &ProductService{
+		ProductRepository: repository,
+	}
+}
+
 func (s *ProductService) Get(id string) (ProductInterface, error) {
 	return s.ProductRepository.Get(id)
 }

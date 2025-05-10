@@ -24,7 +24,7 @@ type ProductInterface interface {
 
 type ProductServiceInterface interface {
 	Get(id string) (ProductInterface, error)
-	Create(product ProductInterface) (ProductInterface, error)
+	Create(name string, price float64) (ProductInterface, error)
 	Enable(id string) (ProductInterface, error)
 	Disable(id string) (ProductInterface, error)
 }
